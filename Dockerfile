@@ -1,4 +1,13 @@
+#######################################################################
+#                                 ROS                                 #
+#######################################################################
+
 FROM ros:melodic-ros-base-bionic
+RUN mkdir -p /logs
+ENV ROS_LOG_DIR logs
+
+RUN ln -snf /bin/bash /bin/sh
+RUN source /opt/ros/melodic/setup.bash
 
 #######################################################################
 #                               OpenCV                                #
@@ -38,14 +47,9 @@ RUN cd \
     && rm 3.2.0.zip
 
 #######################################################################
-#                              AutoFoos                               #
+#                               Display                               #
 #######################################################################
 
-RUN mkdir -p /src
-COPY ./src /src
+RUN apt-get install -qqy x11-apps
+ENV DISPLAY :0
 
-RUN bash -c "source /opt/ros/melodic/setup.bash \
-    && cd / \
-    && catkin_make"
-
-CMD ["bash"]

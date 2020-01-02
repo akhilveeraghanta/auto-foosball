@@ -1,8 +1,16 @@
-# run the container in detatched mode so that we can attatch and run our program
-# eventually the container will start and just run the program, this is just a stop gap
-# until the docker containers are setup correctly
-docker container stop autofooscontainer
-docker container rm autofooscontainer
-docker run -it --name autofooscontainer -d autofoosball/roscore /bin/bash
-docker exec -it autofooscontainer /bin/bash
+#######################################################################
+#                           Start Container                           #
+#######################################################################
 
+# mount some extra stuff for display forwarding
+docker container run --rm -it \
+    --user $(id -u):$(id -g) \
+    --env="DISPLAY" \
+    --volume="$(pwd):/app:rw" \
+    --volume="/etc/group:/etc/group:ro" \
+    --volume="/etc/passwd:/etc/passwd:ro" \
+    --volume="/etc/shadow:/etc/shadow:ro" \
+    --volume="/etc/sudoers.d:/etc/sudoers.d:ro" \
+    --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+    autofoosball/roscore:latest \
+    /bin/bash
