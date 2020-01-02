@@ -1,5 +1,9 @@
 FROM ros:melodic-ros-base-bionic
 
+#######################################################################
+#                               OpenCV                                #
+#######################################################################
+
 # need vim before anything else
 RUN apt-get update
 RUN apt-get install -y vim
@@ -32,5 +36,16 @@ RUN cd \
     && make install \
     && cd ../.. \
     && rm 3.2.0.zip
+
+#######################################################################
+#                              AutoFoos                               #
+#######################################################################
+
+RUN mkdir -p /src
+COPY ./src /src
+
+RUN bash -c "source /opt/ros/melodic/setup.bash \
+    && cd / \
+    && catkin_make"
 
 CMD ["bash"]
