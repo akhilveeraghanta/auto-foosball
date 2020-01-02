@@ -5,10 +5,14 @@
 #define LED 13
 /*Example sketch to control a stepper motor with A4988 stepper motor driver and Arduino without a library. More info: https://www.makerguides.com */
 // Define stepper motor connections and steps per revolution:
-//X direction pin on Longruner pcb
-#define dirPin 6
-//X step pin on Longruner pcb
-#define stepPin 3
+//X direction pin on Longruner pcb for Y axis motor driver
+#define dirPinLinear 6
+//X step pin on Longruner pcb for Y axis motor driver
+#define stepPinLinear 3
+//X direction pin on Longruner pcb for Y axis motor driver
+#define dirPinAngular 5
+//X step pin on Longruner pcb for Y axis motor driver
+#define stepPinAngular 2
 //needs to be pulled low at beginning to enable the longruner
 #define enable 8
 //steps per revolution for Nema 17
@@ -19,9 +23,9 @@
 #define accelStep 25   // rate at which the delay between digital high and low is changed
 #define threshold 5 //threshold of error allowed in mm
 
-float currPosLinear = 0; //centered starting position, at 5 cm mark
-int pulseDelay = 2500; 
-int desiredPosLinear = 0;  //centered starting position, at 50 mm mark
+float currPosLinear = 3.0;
+int pulseDelay = 2500;   //starting velocity for all movements
+int desiredPosLinear = 3;
 
 
 ros::NodeHandle  nh;
@@ -40,7 +44,6 @@ void moveUnoRoutine(std_msgs::Int32& msg){
 
 ros::Subscriber<std_msgs::Int32> moveUnoStepperCallBack("moveUnoStepper", &moveUnoRoutine);
 ros::Subscriber<std_msgs::Float32> getCurrLinearDistanceCallBack("linearDistance", &setCurrDistance);
-
 
 
 //takes desired_pos as input (int type, mm units) and currPosLinear (float type in cm), and bool type dir (direction)
@@ -95,7 +98,7 @@ void positionControlLinear(int desiredPosLinear, float currPosLinear){
    //satisfied with where we are, stop and wait
    else if (error <= threshold){
         pulseDelay = 2500;
-        halt();
+        haltLinear();
    }
    else{
         if (left){
@@ -109,14 +112,78 @@ void positionControlLinear(int desiredPosLinear, float currPosLinear){
     
 }
 
+
+//add the option for three different speeds 
+//takes desired position in degrees, and current position in degrees
+//has threshold of +/- 2 degrees margin of error
+void positionControlAngular(int desiredPosAngular, float currPosAngular){
+
+
+   bool switched_dirs = false;
+   bool cw = false;
+   bool ccw = false;
+
+   //if the direction to move is left
+   if (desiredPosAngular - currPosAngular > 0){
+        if (ccw){
+          switched_dirs = true;
+        }
+        else{
+          switched_dirs = false;
+        }
+        cw  =  true;
+   }
+   //if the direction to move is right
+   else{
+        if (cw){
+          switched_dirs = true;
+        }
+        else{
+          switched_dirs = false;
+        }
+        ccw = true;
+   }
+   
+   int error = abs(desiredPosAngular - currPosAngular);
+   
+   
+   //direction has changed, but still outside of threshold 
+   //reset the speed to starting speed and correct
+   //or could mean reset speed to start a new move
+   if (switched_dirs && error > threshold){
+        pulseDelay = 2500;
+        if (cw){
+          moveLeftAngular();
+        }
+        else{
+          moveRightAngular();
+        }
+   }
+   //satisfied with where we are, stop and wait
+   else if (error <= threshold){
+        pulseDelay = 2500;
+        haltLinear();
+   }
+   else{
+        if (cw){
+          moveLeftAngular();
+        }
+        else{
+          moveRightAngular();
+        }
+   }
+   
+    
+}
+
 //moveLeftLinear by however many steps
 void moveLeftLinear(){
   
-    digitalWrite(dirPin, LOW);
+    digitalWrite(dirPinLinear, LOW);
     // These four lines result in 1 step:
-    digitalWrite(stepPin, HIGH);
+    digitalWrite(stepPinLinear, HIGH);
     delayMicroseconds(pulseDelay);
-    digitalWrite(stepPin, LOW);
+    digitalWrite(stepPinLinear, LOW);
     delayMicroseconds(pulseDelay);
     //maxSpeed is actually the delay value, so logic is reversed
     if (pulseDelay > maxSpeed){
@@ -127,32 +194,66 @@ void moveLeftLinear(){
 void moveRightLinear(){
         
  
-    digitalWrite(dirPin, HIGH);
+    digitalWrite(dirPinLinear, HIGH);
     // These four lines result in 1 step:
-    digitalWrite(stepPin, HIGH);
+    digitalWrite(stepPinLinear, HIGH);
     delayMicroseconds(pulseDelay);
-    digitalWrite(stepPin, LOW);
+    digitalWrite(stepPinLinear, LOW);
     delayMicroseconds(pulseDelay);
     if (pulseDelay > maxSpeed){
     pulseDelay-=accelStep;
     } 
  }
 
-void halt(){
-    digitalWrite(stepPin, LOW);
+void haltLinear(){
+    digitalWrite(stepPinLinear, LOW);
     delayMicroseconds(pulseDelay);
 }
 
+//moveLeftLinear by many steps
+void moveLeftAngular(){
+  
+    digitalWrite(dirPinAngular, LOW);
+    // These four lines result in 1 step:
+    digitalWrite(stepPinAngular, HIGH);
+    delayMicroseconds(pulseDelay);
+    digitalWrite(stepPinAngular, LOW);
+    delayMicroseconds(pulseDelay);
+    //maxSpeed is actually the delay value, so logic is reversed
+    if (pulseDelay > maxSpeed){
+    pulseDelay-=accelStep;
+    }
+}
+//move right by however many steps
+void moveRightAngular(){
+        
  
+    digitalWrite(dirPinAngular, HIGH);
+    // These four lines result in 1 step:
+    digitalWrite(stepPinAngular, HIGH);
+    delayMicroseconds(pulseDelay);
+    digitalWrite(stepPinAngular, LOW);
+    delayMicroseconds(pulseDelay);
+    if (pulseDelay > maxSpeed){
+    pulseDelay-=accelStep;
+    } 
+ }
+
+void haltAngular(){
+    digitalWrite(stepPinAngular, LOW);
+    delayMicroseconds(pulseDelay);
+}
+
+
 void setup() {
     // Declare pins as output:
-    pinMode(stepPin, OUTPUT);
+    pinMode(stepPinLinear, OUTPUT);
     pinMode(enable, OUTPUT);
-    pinMode(dirPin, OUTPUT);
+    pinMode(dirPinLinear, OUTPUT);
     pinMode(LED, OUTPUT);
   
     digitalWrite(enable, LOW);
-    digitalWrite(dirPin, LOW);
+    digitalWrite(dirPinLinear, LOW);
     //ROS publisher and subscriber setup
     nh.initNode();
     nh.subscribe(moveUnoStepperCallBack);
@@ -164,6 +265,7 @@ void loop() {
     if (currPosLinear != 0 && desiredPosLinear != 0){
         positionControlLinear(desiredPosLinear, currPosLinear);
     }
-    
+
+   
     nh.spinOnce();
 }
