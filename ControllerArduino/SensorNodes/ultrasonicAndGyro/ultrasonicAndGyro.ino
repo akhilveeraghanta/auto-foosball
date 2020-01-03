@@ -1,6 +1,6 @@
 #include <ros.h>
 #include <std_msgs/Float32.h>
-#include <std_msgs/Int16.h>
+#include <std_msgs/Int32.h>
 #include<Wire.h>
 
 
@@ -22,7 +22,7 @@ ros::NodeHandle  nh_sensor;
 std_msgs::Float32 linearDist;
 ros::Publisher linearDistanceTopic("/uno/linearDistance", &linearDist);
 //gyro angular position publisher
-std_msgs::Int16 currPosAngular;
+std_msgs::Int32 currPosAngular;
 ros::Publisher angularPosTopic("/uno/currPosAngular", &currPosAngular);
 
 
