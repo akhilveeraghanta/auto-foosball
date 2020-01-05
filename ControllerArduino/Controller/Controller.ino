@@ -38,45 +38,74 @@
 #define moderate 2
 #define fast  3
 
-//starting velocity for linear all movements
-int pulseDelayLinear = 2500; 
+//starting velocity for Linear movement Rod 1
+int pulseDelayLinearOne = 2500; 
 
-//linear position in cm and mm
-float currPosLinear = 0;
-int desiredPosLinear = 40;
+//linear position in cm and mm Rod 1
+int currPosLinearOne = 0;
+int desiredPosLinearOne = 40;
 
-//starting velocity for all angular movements
-int pulseDelayAngular = 2500;
+//starting velocity for angular movement Rod 1
+int pulseDelayAngularOne = 2500;
 
-//angular position in degrees
-int currPosAngular = 0;
-int desiredPosAngular = 60;
+//angular position in degrees Rod 1
+int currPosAngularOne = 0;
+int desiredPosAngularOne = 60;
 
-//desired angular velocity, three options: slow, moderate, fast
-int desiredAngularVelocity = slow;
+//desired angular velocity for Rod 1, three options: slow, moderate, fast
+int desiredAngularVelocityOne = slow;
+
+
+//starting velocity for Linear movement Rod 2
+int pulseDelayLinearTwo = 2500; 
+
+//linear position in cm and mm Rod 2
+int currPosLinearTwo = 0;
+int desiredPosLinearTwo = 40;
+
+//starting velocity for angular movement Rod 2
+int pulseDelayAngularTwo = 2500;
+
+//angular position in degrees Rod 2
+int currPosAngularTwo = 0;
+int desiredPosAngularTwo = 60;
+
+//desired angular velocity for Rod 2, three options: slow, moderate, fast
+int desiredAngularVelocityTwo = slow;
 
 
 ros::NodeHandle  nh;
 
 
-
-void getCurrPosLinear(std_msgs::Float32& msg){
-     currPosLinear = msg.data;
-}
-
-void setLinearPosition(std_msgs::Int32& msg){
-     desiredPosLinear = msg.data;
+void setLinearPositionOne(std_msgs::Int32& msg){
+     desiredPosLinearOne = msg.data;
    
 }
 
-void setAngularPosition(std_msgs::Int32& msg){
-     desiredPosAngular = msg.data;
+void setAngularPositionOne(std_msgs::Int32& msg){
+     desiredPosAngularOne = msg.data;
 }
 
-void setAngularVelocity(std_msgs::Int8& msg){
+void setAngularVelocityOne(std_msgs::Int8& msg){
       
      if (msg.data == slow ||msg.data == moderate ||msg.data == fast){
-      desiredAngularVelocity = msg.data;
+      desiredAngularVelocityOne = msg.data;
+     }
+}
+
+void setLinearPositionTwo(std_msgs::Int32& msg){
+     desiredPosLinearTwo = msg.data;
+   
+}
+
+void setAngularPositionTwo(std_msgs::Int32& msg){
+     desiredPosAngularTwo = msg.data;
+}
+
+void setAngularVelocityTwo(std_msgs::Int8& msg){
+      
+     if (msg.data == slow ||msg.data == moderate ||msg.data == fast){
+      desiredAngularVelocityTwo = msg.data;
      }
 }
 
@@ -84,21 +113,62 @@ void getCurrAngularPosition(std_msgs::Int32& msg){
      currPosAngular = msg.data;
 }
 
+void getCurrPosLinear(std_msgs::Float32& msg){
+     currPosLinear = msg.data;
+}
 
 
 //linear motion desired position callback
-ros::Subscriber<std_msgs::Int32> setLinearPositionCallBack("desiredLinearPosition", &setLinearPosition);
-//current position linear callback
-ros::Subscriber<std_msgs::Float32> getCurrLinearDistanceCallBack("linearDistance", &getCurrPosLinear);
+ros::Subscriber<std_msgs::Int32> setLinearPositionOneCallBack("desiredLinearPositionOne", &setLinearPositionOne);
+
 //desired position angular callback
-ros::Subscriber<std_msgs::Int32> setAngularPositionCallBack("desiredAngularPosition", &setAngularPosition);
+ros::Subscriber<std_msgs::Int32> setAngularPositionOneCallBack("desiredAngularPositionOne", &setAngularPositionOne);
+
 //desired velocity angular callback
-ros::Subscriber<std_msgs::Int8> setAngularVelocityCallBack("desiredAngularVelocity", &setAngularVelocity);
+ros::Subscriber<std_msgs::Int8> setAngularVelocityOneCallBack("desiredAngularVelocityOne", &setAngularVelocityOne);
+
+//linear motion desired position callback
+ros::Subscriber<std_msgs::Int32> setLinearPositionTwoCallBack("desiredLinearPositionTwo", &setLinearPositionTwo);
+
+//desired position angular callback
+ros::Subscriber<std_msgs::Int32> setAngularPositionTwoCallBack("desiredAngularPositionTwo", &setAngularPositionTwo);
+
+//desired velocity angular callback
+ros::Subscriber<std_msgs::Int8> setAngularVelocityTwoCallBack("desiredAngularVelocityTwo", &setAngularVelocityTwo);
+
+
+//current position linear callback
+ros::Subscriber<std_msgs::Int32> currLinearPosOneCallBack("currLinearPositionOne", &currLinearPosOne);
+
 //current position angular callback
 ros::Subscriber<std_msgs::Int32> getCurrAngularPositionCallBack("currPosAngular", &getCurrAngularPosition);
 
+//ultrasonic publisher linear position rod 1
+std_msgs::Int32 currLinearPosOne;
+ros::Publisher currLinearPosOneTopic("/uno/currLinearPositionOne", &currLinearPosOne);
 
-//NOTE: maybe later add current velocity as well 
+//encoder angular position publisher rod 1
+std_msgs::Int32 currAngularPosOne;
+ros::Publisher currAngularPosOneTopic("/uno/currAngularPositionOne", &currAngularPosOne);
+
+//encoder angular direction publisher rod 1
+std_msgs::Int8 currAngularDirOne;
+ros::Publisher currAngularDirOneTopic("/uno/currAngularDirectionOne", &currAngularDirOne);
+
+//ultrasonic publisher linear position rod 2
+std_msgs::Int32 currLinearPosTwo;
+ros::Publisher currLinearPosTwoTopic("/uno/currLinearPositionTwo", &currLinearPosTwo);
+
+//encoder angular position publisher rod 2
+std_msgs::Int32 currAngularPosTwo;
+ros::Publisher currAngularPosTwoTopic("/uno/currAngularPositionTwo", &currAngularPosTwo);
+
+//encoder angular direction publisher rod 2
+std_msgs::Int8 currAngularDirTwo;
+ros::Publisher currAngularDirTwoTopic("/uno/currAngularDirectionTwo", &currAngularDirTwo);
+
+
+
 
 
 //takes desired_pos as input (int type, mm units) and currPosLinear (float type in cm), and bool type dir (direction)
@@ -213,38 +283,6 @@ void positionControlAngular(int desiredPosAngular, int currPosAngular, int desir
    bool cw = false;
    bool ccw = false;
 
-   
-   if (curr < 180 && des >= 180){
-        if (des - curr < curr + 360 - des){
-              cw = true;
-              error = des - curr;
-        }
-        else{
-              ccw = true;
-              error = curr + 360 - des;
-        }
-   }
-
-   else if (curr >= 180 && des < 180){
-        if (curr - des < des + 360 - curr){
-              ccw = true;
-              error = curr - des;
-        }
-        else{
-              cw = true;
-              error = des + 360 - curr;
-        }
-   }
-
-   else{
-        if (des - curr > 0){
-              cw = true;
-        }
-        else{
-              ccw = true;
-        }
-        error = abs(des - curr);
-   }
 
 
    //direction has changed, but still outside of threshold 
@@ -318,7 +356,8 @@ void setup() {
     //set enable to low enables the motor driver
     digitalWrite(enable, LOW);
 
-    
+
+
     //ROS publisher and subscriber setup
     nh.initNode();
     nh.subscribe(setLinearPositionCallBack);
