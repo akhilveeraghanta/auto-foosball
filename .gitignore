@@ -1,0 +1,12 @@
+/build/
+/devel/
+
+.DS_Store
+
+*.pyc
+__pycache__/
+
+.cache
+.pytest_cache/
+
+/src/CMakeLists.txt
