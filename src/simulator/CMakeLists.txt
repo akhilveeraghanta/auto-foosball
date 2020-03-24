@@ -1,17 +1,24 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(simulator)
 
+# Box2d Setup
+set(Box2D_SOURCE_DIR "/home/ross/Box2D_v2.1.2/Box2D/Build")
+add_executable(HelloWorld src/HelloWorld.cpp)
+target_link_libraries (HelloWorld Box2D)
+
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  rospy
+  std_msgs
+)
 
-## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
-
+find_package(Box2D REQUIRED)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -66,7 +73,7 @@ find_package(catkin REQUIRED)
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
+#   std_msgs
 # )
 
 ################################################
@@ -101,7 +108,7 @@ find_package(catkin REQUIRED)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES simulator
-#  CATKIN_DEPENDS other_catkin_pkg
+#  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 
@@ -113,7 +120,8 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
 # include
-# ${catkin_INCLUDE_DIRS}
+  ${catkin_INCLUDE_DIRS}
+  ${Box2D_SOURCE_DIR}
 )
 
 ## Declare a C++ library
@@ -130,6 +138,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/simulator_node.cpp)
+
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
