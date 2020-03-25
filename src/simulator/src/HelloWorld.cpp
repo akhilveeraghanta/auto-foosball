@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2006-2007 Erin Catto http://www.gphysics.com
+* Copyright (c) 2006-2007 Erin Catto http://www.box2d.org
 *
 * This software is provided 'as-is', without any express or implied
 * warranty.  In no event will the authors be held liable for any damages
@@ -16,9 +16,10 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <Box2D/Box2D.h>
+#include "ros/ros.h"
+#include "Box2D/Box2D.h"
 
-#include <cstdio>
+#include <stdio.h>
 
 // This is a simple example of building and running a simulation
 // using Box2D. Here we create a large ground box and a small dynamic
@@ -27,17 +28,15 @@
 // with your rendering engine in your game engine.
 int main(int argc, char** argv)
 {
+    ros::init(argc, argv, "simulator");
 	B2_NOT_USED(argc);
 	B2_NOT_USED(argv);
 
 	// Define the gravity vector.
 	b2Vec2 gravity(0.0f, -10.0f);
 
-	// Do we want to let bodies sleep?
-	bool doSleep = true;
-
 	// Construct a world object, which will hold and simulate the rigid bodies.
-	b2World world(gravity, doSleep);
+	b2World world(gravity);
 
 	// Define the ground body.
 	b2BodyDef groundBodyDef;
@@ -94,16 +93,13 @@ int main(int argc, char** argv)
 		// It is generally best to keep the time step and iterations fixed.
 		world.Step(timeStep, velocityIterations, positionIterations);
 
-		// Clear applied body forces. We didn't apply any forces, but you
-		// should know about this function.
-		world.ClearForces();
-
 		// Now print the position and angle of the body.
 		b2Vec2 position = body->GetPosition();
 		float32 angle = body->GetAngle();
 
 		printf("%4.2f %4.2f %4.2f\n", position.x, position.y, angle);
 	}
+    printf("Done\n");
 
 	// When the world destructor is called, all bodies and joints are freed. This can
 	// create orphaned pointers, so be careful about your world management.

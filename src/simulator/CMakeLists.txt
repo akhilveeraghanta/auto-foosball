@@ -1,11 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(simulator)
 
-# Box2d Setup
-set(Box2D_SOURCE_DIR "/home/ross/Box2D_v2.1.2/Box2D/Build")
-add_executable(HelloWorld src/HelloWorld.cpp)
-target_link_libraries (HelloWorld Box2D)
-
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
 
@@ -18,7 +13,8 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
-find_package(Box2D REQUIRED)
+add_subdirectory(external/Box2D-cmake)
+find_package(Box2D)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -108,7 +104,7 @@ find_package(Box2D REQUIRED)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES simulator
-#  CATKIN_DEPENDS roscpp rospy std_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 
@@ -121,7 +117,6 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
-  ${Box2D_SOURCE_DIR}
 )
 
 ## Declare a C++ library
@@ -139,7 +134,6 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/simulator_node.cpp)
 
-
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -151,9 +145,9 @@ include_directories(
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
+#target_link_libraries(${PROJECT_NAME}_node
+  #${catkin_LIBRARIES}
+#)
 
 #############
 ## Install ##
@@ -202,3 +196,6 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+add_executable(HelloWorld src/HelloWorld.cpp)
+target_link_libraries (HelloWorld ${catkin_LIBRARIES} tobanteGaming::Box2D)
