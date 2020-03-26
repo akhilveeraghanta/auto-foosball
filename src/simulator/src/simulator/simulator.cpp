@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     ros::NodeHandle nh;
     // Advertise the Ball position topic
     ros::Publisher ball_position_pub = nh.advertise<messages::Ball>("/simulator/ball", 1000);
-    ros::Rate loop_rate(10);
+    ros::Rate loop_rate(1);
 
 	B2_NOT_USED(argc);
 	B2_NOT_USED(argv);
@@ -66,7 +66,7 @@ int main(int argc, char** argv)
 	// Define the dynamic body. We set its position and call the body factory.
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
-	bodyDef.position.Set(0.0f, 4.0f);
+	bodyDef.position.Set(20.0f, 20.0f);
 	b2Body* body = world.CreateBody(&bodyDef);
 
 	// Define another box shape for our dynamic body.
