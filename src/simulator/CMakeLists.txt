@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  messages
 )
 
 add_subdirectory(external/Box2D-cmake)
@@ -103,10 +104,10 @@ find_package(Qt5 REQUIRED Core Widgets)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES simulator
-  CATKIN_DEPENDS roscpp rospy std_msgs
-#  DEPENDS system_lib
+  #INCLUDE_DIRS include
+  LIBRARIES simulator
+  CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs message_runtime
+  DEPENDS system_lib
 )
 
 ###########
@@ -198,8 +199,9 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-add_executable(simulator src/simulator.cpp)
+add_executable(simulator src/simulator/simulator.cpp)
+add_dependencies(simulator ${catkin_EXPORTED_TARGETS})
 target_link_libraries (simulator ${catkin_LIBRARIES} tobanteGaming::Box2D)
 
-add_executable(visual_table src/visual_table.cpp)
-target_link_libraries (visual_table ${catkin_LIBRARIES} Qt5::Core Qt5::Widgets)
+add_executable(virtual_table src/simulator/virtual_table.cpp)
+target_link_libraries (virtual_table ${catkin_LIBRARIES} Qt5::Core Qt5::Widgets)

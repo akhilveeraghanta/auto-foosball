@@ -1,3 +1,4 @@
+
 /*
 * Copyright (c) 2006-2007 Erin Catto http://www.box2d.org
 *
@@ -16,6 +17,7 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
+#include "messages/Ball.h"
 #include "ros/ros.h"
 #include "Box2D/Box2D.h"
 
@@ -25,11 +27,14 @@
 // using Box2D. Here we create a large ground box and a small dynamic
 // box.
 // There are no graphics for this example. Box2D is meant to be used
-// with your rendering engine in your game engine.
 int main(int argc, char** argv)
 {
     // init ROS
     ros::init(argc, argv, "simulator");
+    ros::NodeHandle nh;
+    // Advertise the Ball position topic
+    ros::Publisher ball_position_pub = nh.advertise<messages::Ball>("/simulator/ball", 1000);
+    ros::Rate loop_rate(10);
 
 	B2_NOT_USED(argc);
 	B2_NOT_USED(argv);
@@ -89,8 +94,7 @@ int main(int argc, char** argv)
 	int32 positionIterations = 2;
 
 	// This is our little game loop.
-	for (int32 i = 0; i < 60; ++i)
-	{
+    while (ros::ok()) {
 		// Instruct the world to perform a single step of simulation.
 		// It is generally best to keep the time step and iterations fixed.
 		world.Step(timeStep, velocityIterations, positionIterations);
@@ -99,7 +103,14 @@ int main(int argc, char** argv)
 		b2Vec2 position = body->GetPosition();
 		float32 angle = body->GetAngle();
 
+        messages::Ball ball_position;
+        ball_position.position.x = position.x;
+        ball_position.position.y = position.y;
+        ball_position_pub.publish(ball_position);
+
 		printf("%4.2f %4.2f %4.2f\n", position.x, position.y, angle);
+        ros::spinOnce();
+        loop_rate.sleep();
 	}
     printf("Done\n");
 
