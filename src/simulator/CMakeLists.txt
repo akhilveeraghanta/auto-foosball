@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_subdirectory(external/Box2D-cmake)
 find_package(Box2D)
+find_package(Qt5 REQUIRED Core Widgets)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -197,5 +198,8 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-add_executable(HelloWorld src/HelloWorld.cpp)
-target_link_libraries (HelloWorld ${catkin_LIBRARIES} tobanteGaming::Box2D)
+add_executable(simulator src/simulator.cpp)
+target_link_libraries (simulator ${catkin_LIBRARIES} tobanteGaming::Box2D)
+
+add_executable(visual_table src/visual_table.cpp)
+target_link_libraries (visual_table ${catkin_LIBRARIES} Qt5::Core Qt5::Widgets)

@@ -28,7 +28,9 @@
 // with your rendering engine in your game engine.
 int main(int argc, char** argv)
 {
+    // init ROS
     ros::init(argc, argv, "simulator");
+
 	B2_NOT_USED(argc);
 	B2_NOT_USED(argv);
 
