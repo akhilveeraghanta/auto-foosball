@@ -12,64 +12,47 @@
 #include <iostream>
 #include "messages/Ball.h"
 #include <boost/thread/thread.hpp>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QGraphicsItem>
+#include <QDialog>
+#include <QColor>
+#include <QTransform>
 
 class Foosball : public QWidget {
     public:
-        Foosball(QWidget *parent=0) : QWidget(parent) {
+        Foosball(QWidget *parent=0) : QWidget(parent), scene(new QGraphicsScene(this)) {
             setStyleSheet("background-color:white;");
             resize(B_WIDTH, B_HEIGHT);
             move(500, 500);
-            loadImages();
         }
 
         void adjustBall(const messages::Ball::ConstPtr& msg) {
             ROS_INFO("I heard: [Position.x: %f] [Position.y: %f]", msg->position.x, msg->position.y);
-            x_pos = msg -> position.x;
-            y_pos = msg -> position.y;
+            QBrush greenBrush(Qt::green);
+            QPen outlinePen(Qt::black);
+            outlinePen.setWidth(2);
+            scene -> addEllipse(int(msg -> position.x), int(msg -> position.y), 2, 2, outlinePen, greenBrush);
         }
 
     private:
         QImage ball_img;
+        QGraphicsScene* scene;
+
         int x_pos;
         int y_pos;
 
         static const int B_WIDTH = 300;
         static const int B_HEIGHT = 300;
-
-        void loadImages() {
-            ball_img.load("soccer.jpg");
-        }
-
-        void paintEvent(QPaintEvent *e) {
-            ROS_INFO("Paint event");
-            Q_UNUSED(e);
-            doDrawing();
-        }
-
-        void doDrawing() {
-            QPainter qp(this);
-            qp.drawImage(1,1,ball_img);
-            gameOver(qp);
-        }
-
-        void gameOver(QPainter &qp) {
-            QString message = "O";
-            QFont font("Courier", 15, QFont::DemiBold);
-            QFontMetrics fm(font);
-            int textWidth = fm.width(message);
-
-            qp.setFont(font);
-            int h =height();
-            int w = width();
-
-            if(!x_pos && !y_pos) {
-                qp.translate(QPoint(w/2, h/2));
-            } else {
-                qp.translate(QPoint(x_pos, y_pos));
-            }
-            qp.drawText(-textWidth/2, 0, message);
-        }
 };
+
+void adjustBall(const messages::Ball::ConstPtr& msg) {
+    ROS_INFO("I heard: [Position.x: %f] [Position.y: %f]", msg->position.x, msg->position.y);
+    QBrush greenBrush(Qt::green);
+    QPen outlinePen(Qt::black);
+    outlinePen.setWidth(2);
+    //scene -> addEllipse(int(msg -> position.x), int(msg -> position.y), 15, 15, outlinePen, greenBrush);
+}
 
 int main(int argc, char** argv) {
     // init ROS visual table node
@@ -77,20 +60,23 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
 
     QApplication app(argc, argv);
-    Foosball window;
 
-    ros::Subscriber ball_position_sub = nh.subscribe("/simulator/ball", 1000, &Foosball::adjustBall, &window);
+    QBrush greenBrush(Qt::green);
+    QPen outlinePen(Qt::black);
+    outlinePen.setWidth(2);
 
-    //QWidget window;
-    //Timer window;
+    QGraphicsScene scene;
+    scene.addEllipse(400,400,15,15,outlinePen,greenBrush);
+    scene.addEllipse(110,100,40,40,outlinePen,greenBrush);
 
-    
-    //window.resize(250,150);
-    window.setMinimumSize(50,200);
-    window.setWindowTitle("Foosball Visualizer");
-    window.show();
+    QGraphicsView view(&scene);
+    view.resize(500,500);
+    view.setWindowTitle("Foosball Visualizer");
+    view.show();
 
-    boost::thread thread_spin (boost::bind(ros::spin));
+    ros::Subscriber ball_position_sub = nh.subscribe("/simulator/ball", 1000, adjustBall);
+
+    boost::thread thread_spin(boost::bind(ros::spin));
 
     return app.exec();
 }
