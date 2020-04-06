@@ -17,7 +17,6 @@ find_package(catkin REQUIRED COMPONENTS
 add_subdirectory(external/Box2D-cmake)
 find_package(Box2D)
 find_package(Qt5 REQUIRED Core Widgets)
-
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
@@ -203,5 +202,18 @@ add_executable(simulator src/simulator/simulator.cpp)
 add_dependencies(simulator ${catkin_EXPORTED_TARGETS})
 target_link_libraries (simulator ${catkin_LIBRARIES} tobanteGaming::Box2D)
 
-add_executable(virtual_table src/simulator/virtual_table.cpp)
+#######################################################################
+#                                 QT                                  #
+#######################################################################
+
+# TODO cleanup
+set(SOURCES src/simulator/virtual_table.h
+            src/simulator/virtual_table_communicator.h
+            src/simulator/virtual_table_communicator.cpp
+            src/simulator/virtual_table.cpp)
+set (CMAKE_AUTOMOC ON)
+set (CMAKE_INCLUDE_CURRENT_DIR ON)
+
+add_executable(virtual_table ${SOURCES} src/simulator/main_application.cpp)
+add_dependencies(virtual_table ${catkin_EXPORTED_TARGETS})
 target_link_libraries (virtual_table ${catkin_LIBRARIES} Qt5::Core Qt5::Widgets)

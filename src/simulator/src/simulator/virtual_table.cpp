@@ -11,72 +11,61 @@
 #include <QGridLayout>
 #include <iostream>
 #include "messages/Ball.h"
+#include "messages/Stick.h"
 #include <boost/thread/thread.hpp>
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QGraphicsItem>
 #include <QDialog>
 #include <QColor>
+#include <QObject>
 #include <QTransform>
+#include <QMainWindow>
+#include "virtual_table_communicator.h"
+#include "virtual_table.h"
+/**********************************************************************
+ *                    Virtual Table Implementation                    *
+ **********************************************************************/
 
-class Foosball : public QWidget {
-    public:
-        Foosball(QWidget *parent=0) : QWidget(parent), scene(new QGraphicsScene(this)) {
-            setStyleSheet("background-color:white;");
-            resize(B_WIDTH, B_HEIGHT);
-            move(500, 500);
-        }
+VirtualTable::VirtualTable(QWidget *parent, int width_px, int height_px):
+    QMainWindow(parent)
+{
+    connect(&communicator,
+            &VirtualTableCommunicator::send_human_stick_position_to_gui,
+            this,
+            &VirtualTable::update_human_stick_position);
 
-        void adjustBall(const messages::Ball::ConstPtr& msg) {
-            ROS_INFO("I heard: [Position.x: %f] [Position.y: %f]", msg->position.x, msg->position.y);
-            QBrush greenBrush(Qt::green);
-            QPen outlinePen(Qt::black);
-            outlinePen.setWidth(2);
-            scene -> addEllipse(int(msg -> position.x), int(msg -> position.y), 2, 2, outlinePen, greenBrush);
-        }
+    connect(&communicator,
+            &VirtualTableCommunicator::send_ai_stick_position_to_gui,
+            this,
+            &VirtualTable::update_ai_stick_position);
 
-    private:
-        QImage ball_img;
-        QGraphicsScene* scene;
+    connect(&communicator,
+            &VirtualTableCommunicator::send_ball_position_to_gui,
+            this,
+            &VirtualTable::update_ball_position);
 
-        int x_pos;
-        int y_pos;
+    setStyleSheet("background-color:green;");
+}
 
-        static const int B_WIDTH = 300;
-        static const int B_HEIGHT = 300;
-};
-
-void adjustBall(const messages::Ball::ConstPtr& msg) {
-    ROS_INFO("I heard: [Position.x: %f] [Position.y: %f]", msg->position.x, msg->position.y);
+void VirtualTable::update_ball_position(const messages::Ball::ConstPtr& msg) {
+    ROS_INFO("[Position.x: %f] [Position.y: %f]", msg->position.x, msg->position.y);
     QBrush greenBrush(Qt::green);
     QPen outlinePen(Qt::black);
     outlinePen.setWidth(2);
-    //scene -> addEllipse(int(msg -> position.x), int(msg -> position.y), 15, 15, outlinePen, greenBrush);
+    //this->addEllipse(int(msg -> position.x), int(msg -> position.y), 2, 2, outlinePen, greenBrush);
 }
 
-int main(int argc, char** argv) {
-    // init ROS visual table node
-    ros::init(argc, argv, "virtual_table");
-    ros::NodeHandle nh;
-
-    QApplication app(argc, argv);
-
-    QBrush greenBrush(Qt::green);
-    QPen outlinePen(Qt::black);
-    outlinePen.setWidth(2);
-
-    QGraphicsScene scene;
-    scene.addEllipse(400,400,15,15,outlinePen,greenBrush);
-    scene.addEllipse(110,100,40,40,outlinePen,greenBrush);
-
-    QGraphicsView view(&scene);
-    view.resize(500,500);
-    view.setWindowTitle("Foosball Visualizer");
-    view.show();
-
-    ros::Subscriber ball_position_sub = nh.subscribe("/simulator/ball", 1000, adjustBall);
-
-    boost::thread thread_spin(boost::bind(ros::spin));
-
-    return app.exec();
+void VirtualTable::update_ai_stick_position(const messages::Stick::ConstPtr& msg) {
+    // TODO IMPLEMENT ME ROSS!
 }
+
+void VirtualTable::update_human_stick_position(const messages::Stick::ConstPtr& msg) {
+    // TODO IMPLEMENT ME ROSS!
+}
+
+const VirtualTableCommunicator& VirtualTable::get_communicator(){
+    return communicator;
+}
+
+VirtualTable::~VirtualTable(){}
