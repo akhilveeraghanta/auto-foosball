@@ -33,6 +33,7 @@
 class VirtualTable : public QMainWindow {
 
         Q_OBJECT
+
     public:
 
         /**
@@ -47,10 +48,13 @@ class VirtualTable : public QMainWindow {
 
         VirtualTableCommunicator& get_communicator(void);
 
-        private slots:
+    private slots:
         void refresh_gui(void);
 
     private:
+        QWidget* main_widget;
+        QGraphicsScene scene;
+        QGraphicsView *view;
         VirtualTable* ui;
         QImage ball_img;
         VirtualTableCommunicator communicator;

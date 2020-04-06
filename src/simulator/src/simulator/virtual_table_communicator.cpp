@@ -21,9 +21,11 @@ void VirtualTableCommunicator::set_ai_stick(const messages::Stick::ConstPtr& msg
 const messages::Ball& VirtualTableCommunicator::get_ball(){
     return ball;
 }
+
 const messages::Stick& VirtualTableCommunicator::get_human_stick(){
     return human_stick;
 }
+
 const messages::Stick& VirtualTableCommunicator::get_ai_stick(){
     return ai_stick;
 }

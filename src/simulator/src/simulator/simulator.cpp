@@ -33,7 +33,7 @@ int main(int argc, char** argv)
     ros::NodeHandle nh;
     // Advertise the Ball position topic
     ros::Publisher ball_position_pub = nh.advertise<messages::Ball>("/simulator/ball", 1000);
-    ros::Rate loop_rate(1);
+    ros::Rate loop_rate(100);
 
 	B2_NOT_USED(argc);
 	B2_NOT_USED(argv);

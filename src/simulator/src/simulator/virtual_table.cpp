@@ -35,7 +35,11 @@ VirtualTable::VirtualTable(QWidget *parent, int width_px, int height_px):
             this,
             &VirtualTable::refresh_gui);
 
-    setStyleSheet("background-color:green;");
+    setStyleSheet("background-color:white;");
+    scene.setSceneRect(0,0,500,500);
+    main_widget = new QWidget();
+    view = new QGraphicsView(&scene);
+    setCentralWidget(view);
 }
 
 VirtualTable::~VirtualTable(){}
@@ -45,11 +49,17 @@ VirtualTableCommunicator& VirtualTable::get_communicator(){
 }
 
 void VirtualTable::refresh_gui() {
-    ROS_INFO("Signal Triggered: [Position.x: %f] [Position.y: %f]",
-            communicator.get_ball().position.x, communicator.get_ball().position.y);
-    QBrush greenBrush(Qt::green);
+    QBrush whiteBrush(Qt::white);
     QPen outlinePen(Qt::black);
-    outlinePen.setWidth(2);
-    //this->addEllipse(int(msg -> position.x), int(msg -> position.y), 2, 2, outlinePen, greenBrush);
-}
+    outlinePen.setWidth(10);
 
+    this->scene.clear();
+    this->scene.addEllipse(
+            communicator.get_ball().position.x,
+            communicator.get_ball().position.y,
+            2, 2, outlinePen, whiteBrush);
+
+    this->scene.update();
+    this->main_widget->repaint();
+    this->main_widget->update();
+}

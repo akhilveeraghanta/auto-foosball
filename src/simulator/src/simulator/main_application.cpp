@@ -21,7 +21,6 @@
 #include <QObject>
 #include <QTransform>
 #include <QMainWindow>
-// TODO fix relative imports
 #include "virtual_table.h"
 #include "virtual_table_communicator.h"
 
@@ -44,12 +43,7 @@ int main(int argc, char** argv) {
 
     QApplication app(argc, argv);
 
-    QBrush greenBrush(Qt::green);
-    QPen outlinePen(Qt::black);
-    outlinePen.setWidth(2);
 
-    //scene.addEllipse(400, 400, 15, 15, outlinePen, greenBrush);
-    //scene.addEllipse(110, 100, 40, 40, outlinePen, greenBrush);
     vt = new VirtualTable(0,500,500);
     vt->resize(500,500);
     vt->setWindowTitle("Foosball Visualizer");
