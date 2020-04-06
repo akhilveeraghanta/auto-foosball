@@ -44,13 +44,11 @@ class VirtualTable : public QMainWindow {
          */
         explicit VirtualTable(QWidget *parent=0, int width_px=500, int height_px=500);
         ~VirtualTable();
-        const VirtualTableCommunicator& get_communicator();
+
+        VirtualTableCommunicator& get_communicator(void);
 
         private slots:
-        void update_ball_position(const messages::Ball::ConstPtr& msg);
-        void update_human_stick_position(const messages::Stick::ConstPtr& msg);
-        void update_ai_stick_position(const messages::Stick::ConstPtr& msg);
-
+        void refresh_gui(void);
 
     private:
         VirtualTable* ui;

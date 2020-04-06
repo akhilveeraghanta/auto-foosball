@@ -31,18 +31,28 @@
  */
 class VirtualTableCommunicator : public QObject
 {
-        Q_OBJECT
+    Q_OBJECT
+
     public:
-         explicit VirtualTableCommunicator(QObject * parent = 0);
 
-         void send_ball_position(const messages::Ball::ConstPtr& msg) const;
-         void send_human_stick_position(const messages::Stick::ConstPtr& msg) const;
-         void send_ai_stick_position(const messages::Stick::ConstPtr& msg) const;
+        explicit VirtualTableCommunicator(QObject * parent = 0);
+        ~VirtualTableCommunicator();
 
-         ~VirtualTableCommunicator();
+        void set_ball(const messages::Ball::ConstPtr& msg);
+        void set_human_stick(const messages::Stick::ConstPtr& msg);
+        void set_ai_stick(const messages::Stick::ConstPtr& msg);
+
+        const messages::Ball& get_ball();
+        const messages::Stick& get_human_stick();
+        const messages::Stick& get_ai_stick();
+
+
+    private:
+        messages::Stick human_stick;
+        messages::Stick ai_stick;
+        messages::Ball ball;
 
     signals:
-        void send_ball_position_to_gui(const messages::Ball::ConstPtr& msg) const;
-        void send_human_stick_position_to_gui(const messages::Stick::ConstPtr& msg) const;
-        void send_ai_stick_position_to_gui(const messages::Stick::ConstPtr& msg) const;
+        void refresh_gui(void) const;
+
 };

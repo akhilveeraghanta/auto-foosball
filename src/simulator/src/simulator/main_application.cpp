@@ -30,7 +30,7 @@ namespace {
 }
 
 void updateBall_fixme(const messages::Ball::ConstPtr& msg){
-    vt->get_communicator().send_ball_position(msg);
+    vt->get_communicator().set_ball(msg);
 }
 
 /**********************************************************************
@@ -43,7 +43,6 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
 
     QApplication app(argc, argv);
-    qRegisterMetaType<messages::Ball::ConstPtr>();
 
     QBrush greenBrush(Qt::green);
     QPen outlinePen(Qt::black);

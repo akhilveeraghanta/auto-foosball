@@ -31,41 +31,25 @@ VirtualTable::VirtualTable(QWidget *parent, int width_px, int height_px):
     QMainWindow(parent)
 {
     connect(&communicator,
-            &VirtualTableCommunicator::send_human_stick_position_to_gui,
+            &VirtualTableCommunicator::refresh_gui,
             this,
-            &VirtualTable::update_human_stick_position);
-
-    connect(&communicator,
-            &VirtualTableCommunicator::send_ai_stick_position_to_gui,
-            this,
-            &VirtualTable::update_ai_stick_position);
-
-    connect(&communicator,
-            &VirtualTableCommunicator::send_ball_position_to_gui,
-            this,
-            &VirtualTable::update_ball_position);
+            &VirtualTable::refresh_gui);
 
     setStyleSheet("background-color:green;");
 }
 
-void VirtualTable::update_ball_position(const messages::Ball::ConstPtr& msg) {
-    ROS_INFO("[Position.x: %f] [Position.y: %f]", msg->position.x, msg->position.y);
+VirtualTable::~VirtualTable(){}
+
+VirtualTableCommunicator& VirtualTable::get_communicator(){
+    return communicator;
+}
+
+void VirtualTable::refresh_gui() {
+    ROS_INFO("Signal Triggered: [Position.x: %f] [Position.y: %f]",
+            communicator.get_ball().position.x, communicator.get_ball().position.y);
     QBrush greenBrush(Qt::green);
     QPen outlinePen(Qt::black);
     outlinePen.setWidth(2);
     //this->addEllipse(int(msg -> position.x), int(msg -> position.y), 2, 2, outlinePen, greenBrush);
 }
 
-void VirtualTable::update_ai_stick_position(const messages::Stick::ConstPtr& msg) {
-    // TODO IMPLEMENT ME ROSS!
-}
-
-void VirtualTable::update_human_stick_position(const messages::Stick::ConstPtr& msg) {
-    // TODO IMPLEMENT ME ROSS!
-}
-
-const VirtualTableCommunicator& VirtualTable::get_communicator(){
-    return communicator;
-}
-
-VirtualTable::~VirtualTable(){}
