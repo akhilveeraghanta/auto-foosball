@@ -49,9 +49,9 @@ VirtualTableCommunicator& VirtualTable::get_communicator(){
 }
 
 void VirtualTable::refresh_gui() {
-    QBrush whiteBrush(Qt::white);
+    QBrush whiteBrush(Qt::black);
     QPen outlinePen(Qt::black);
-    outlinePen.setWidth(10);
+    outlinePen.setWidth(20);
 
     this->scene.clear();
     this->scene.addEllipse(
