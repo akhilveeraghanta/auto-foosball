@@ -29,4 +29,4 @@ jobs:
     # Runs a set of commands using the runners shell
     - name: Check formatting
       run: |
-        ../../formatting_scripts/check_formatting_ci.sh
+        ./formatting_scripts/check_formatting_ci.sh
