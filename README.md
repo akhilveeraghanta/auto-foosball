@@ -10,7 +10,7 @@ An automatic foosball playing robot. Our goal is to be able to consistently beat
 ![foos](docs/foosball_arch.png)
 
 ### Simulator
-TEST
+TODO
 
 ### Controller
 TODO
