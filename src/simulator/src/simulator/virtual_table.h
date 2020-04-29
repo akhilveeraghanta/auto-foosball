@@ -1,28 +1,28 @@
 #pragma once
-#include "ros/ros.h"
-#include <QLabel>
-#include <QtCore>
-#include <QWidget>
-#include <QPainter>
-#include <QTime>
-#include <QHBoxLayout>
-#include <QApplication>
-#include <QIcon>
-#include <QFrame>
-#include <QGridLayout>
-#include <iostream>
 #include "messages/Ball.h"
 #include "messages/Stick.h"
-#include <boost/thread/thread.hpp>
+#include "ros/ros.h"
+#include "virtual_table_communicator.h"
+#include <QApplication>
+#include <QColor>
+#include <QDialog>
+#include <QFrame>
+#include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QGraphicsView>
-#include <QGraphicsItem>
-#include <QDialog>
-#include <QColor>
-#include <QObject>
-#include <QTransform>
+#include <QGridLayout>
+#include <QHBoxLayout>
+#include <QIcon>
+#include <QLabel>
 #include <QMainWindow>
-#include "virtual_table_communicator.h"
+#include <QObject>
+#include <QPainter>
+#include <QTime>
+#include <QTransform>
+#include <QWidget>
+#include <QtCore>
+#include <boost/thread/thread.hpp>
+#include <iostream>
 /**
  * Main Virtual Table Widget
  *
@@ -32,30 +32,30 @@
  */
 class VirtualTable : public QMainWindow {
 
-        Q_OBJECT
+  Q_OBJECT
 
-    public:
+public:
+  /**
+   * Creates a new VirtualTable widget
+   *
+   * @param parent The parent widget, defaults to nothing
+   * @param width_px The width of the widget
+   * @param height_px The height of the widget
+   */
+  explicit VirtualTable(QWidget *parent = 0, int width_px = 500,
+                        int height_px = 500);
+  ~VirtualTable();
 
-        /**
-         * Creates a new VirtualTable widget
-         *
-         * @param parent The parent widget, defaults to nothing
-         * @param width_px The width of the widget
-         * @param height_px The height of the widget
-         */
-        explicit VirtualTable(QWidget *parent=0, int width_px=500, int height_px=500);
-        ~VirtualTable();
+  VirtualTableCommunicator &get_communicator(void);
 
-        VirtualTableCommunicator& get_communicator(void);
+private slots:
+  void refresh_gui(void);
 
-    private slots:
-        void refresh_gui(void);
-
-    private:
-        QWidget* main_widget;
-        QGraphicsScene scene;
-        QGraphicsView *view;
-        VirtualTable* ui;
-        QImage ball_img;
-        VirtualTableCommunicator communicator;
+private:
+  QWidget *main_widget;
+  QGraphicsScene scene;
+  QGraphicsView *view;
+  VirtualTable *ui;
+  QImage ball_img;
+  VirtualTableCommunicator communicator;
 };
