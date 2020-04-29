@@ -103,7 +103,7 @@ int getCurrPosLinearTwo() {
   // Sets the trigPin on HIGH state for 10 micro seconds
   digitalWrite(TRIG_PIN_TWO, HIGH);
   delayMicroseconds(10);
-  digitalWrite(TRIG_PIN_TWO, LOW);
+  digitalWrite(                         TRIG_PIN_TWO, LOW);
   // Reads the echoPin, returns the sound wave travel time in microseconds
   duration = pulseIn(ECHO_PIN_TWO, HIGH);
   // Calculating the distance in mm
