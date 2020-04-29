@@ -32,9 +32,9 @@ function run_clang_format () {
     # Find all the files that we want to format, and pass them to
     # clang-format as arguments
     # We remove the last -o flag from the extension string
-    find $CURR_DIR/../src/ ${EXTENSION_STRING::-2}  \
-        # TODO improve this, shouldn't be hardcoded, make similar to CLANG_FORMAT_EXTENSIONS
-        -not -path $CURR_DIR/../src/simulator/external/Box2D-cmake \
+    find $CURR_DIR/../src/ \
+        -not -path "*/Box2D/*" \
+        ${EXTENSION_STRING::-2} \
         | xargs -I{} -n1000 $CURR_DIR/clang-format-$CLANG_VERSION -i -style=file
 
     if [[ "$?" != 0 ]]; then
