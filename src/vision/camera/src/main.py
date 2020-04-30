@@ -29,7 +29,7 @@ if __name__ == "__main__":
     while True:
         ret, frame = CAM.read()
         bridge = CvBridge()
-        image_message = bridge.cv2_to_imgmsg(frame, encoding="passthrough")
+        image_message = bridge.cv2_to_imgmsg(frame, encoding="bgr8")
         CAMERA_TOPIC.publish(image_message)
 
         if not ret:
