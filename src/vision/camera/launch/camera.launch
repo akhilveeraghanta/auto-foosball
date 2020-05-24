@@ -1,8 +1,11 @@
 <?xml version="1.0"?>
 <launch>
     <node name="web_video_server" pkg="web_video_server" type="web_video_server">
-        <param name="~port" value="80"/>
+        <param name="~port" value="8080"/>
         <param name="~ros_threads" value="1"/>
+    </node>
+
+    <node name="camera" pkg="camera" type="main.py">
     </node>
 
 </launch>

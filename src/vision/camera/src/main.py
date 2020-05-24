@@ -4,8 +4,6 @@
 Node responsible for taking the camera input from a webcam
 and publishing it as a ROS sensor_image
 
-NOTE: This is an interm file to get video data until we setup
-DeepStream/GStreamer once the Jetson Nano arrives
 """
 
 import cv2
@@ -21,8 +19,13 @@ if __name__ == "__main__":
     # start the node
     rospy.init_node("camera")
 
+    gst_pipeline = "nvarguscamerasrc ! video/x-raw(memory:NVMM), "+\
+                   "width=(int)1280, height=(int)720, format=(string)NV12, "+\
+                   "framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw,"+\
+                   "format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink"
+
     # acquire camera and setup topic
-    CAM = cv2.VideoCapture(0)
+    CAM = cv2.VideoCapture(gst_pipeline)
     CAMERA_TOPIC = rospy.Publisher('/camera', Image, queue_size=1)
 
     # publish frames
